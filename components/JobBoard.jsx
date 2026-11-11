@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "./AuthProvider";
+import { primaryBtn, secondaryBtn } from "@/lib/ui";
 import SearchBar from "./SearchBar";
 import JobFilters from "./JobFilters";
 import JobCard from "./JobCard";
@@ -9,6 +12,9 @@ const PAGE_SIZE = 6;
 const TYPES = ["All", "Internship", "Full-time", "Part-time", "Contract"];
 
 export default function JobBoard() {
+  const { role } = useAuth();
+  const hireHref = role === "employer" || role === "admin" ? "/employer/jobs/new" : "/signup?role=employer";
+
   // What the user typed / selected
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -115,6 +121,10 @@ export default function JobBoard() {
             Browse listings from different portals, read the details here, and
             apply on the original website.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="#jobs" className={primaryBtn}>Find a job</a>
+            <Link href={hireHref} className={secondaryBtn}>I am hiring</Link>
+          </div>
           <div className="mt-8 max-w-3xl">
             <SearchBar
               query={query}

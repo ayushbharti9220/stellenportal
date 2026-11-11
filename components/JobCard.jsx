@@ -49,6 +49,11 @@ export default function JobCard({ job }) {
             {job.location}
           </span>
         )}
+        {job.workplace_type && !(job.location || "").toLowerCase().includes(job.workplace_type.toLowerCase()) && (
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+            {job.workplace_type}
+          </span>
+        )}
       </div>
 
       <p className="mt-4 text-sm font-medium text-slate-900">
@@ -56,7 +61,7 @@ export default function JobCard({ job }) {
       </p>
 
       <div className="mt-auto flex items-center justify-between pt-5 text-xs text-slate-500">
-        <span>via {job.source_name}</span>
+        <span>{job.apply_method === "internal" ? "Apply on Stellenportal" : `via ${job.source_name}`}</span>
         <span>{date}</span>
       </div>
     </Link>
