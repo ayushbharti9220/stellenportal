@@ -1,53 +1,36 @@
 # Stellenportal
 
-A job portal built with Next.js, Tailwind CSS and Supabase (PostgreSQL, Auth, Storage).
-Job seekers browse and search jobs and apply with a CV. Employers and HR teams post jobs and review applicants.
-Jobs from other portals can be imported by an admin, and their Apply Now button opens the original website.
+A full-stack job portal built with Next.js, Tailwind CSS, and Supabase. Job seekers can search listings and apply with their CV, employers can post roles and review candidates, and admins can bulk-import external listings via CSV.
 
-## Status
-- Phase 1-4: database, frontend, API, search, filters, Load More: done
-- Phase 5: accounts (job seeker / employer / admin), post jobs, apply with CV upload, admin dashboard, CSV import: done
-- Next: polish, SEO, deployment on Vercel
+**Live Site:** [stellenportal-one.vercel.app](https://stellenportal-one.vercel.app)
 
-## Setup
-1. `npm install`
-2. Copy `.env.example` to `.env.local` and add your Supabase URL and publishable key.
-3. In Supabase > SQL Editor run, in order:
-   `database/schema.sql` (if needed), `database/rls-policy.sql`, `database/seed-sample-jobs.sql`, `database/phase5-migration.sql`
-4. `npm run dev` and open http://localhost:3000
-5. Sign up on the website, then make yourself admin (last section of `database/phase5-migration.sql`).
+---
 
-## Deployment (Vercel + Supabase)
-1. Push the code to GitHub. Never commit `.env.local`.
-2. On vercel.com choose **Add New > Project**, import the repository (framework: Next.js).
-3. Add the environment variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` before the first deploy.
-4. In Supabase > Authentication > URL Configuration set the Site URL to the Vercel address and add it to the Redirect URLs.
-5. `vercel.json` runs `/api/keepalive` once a day so the free Supabase project is not paused for inactivity.
+## Features
 
-Live site: _add your Vercel link here_
+- **Job Seeker:** Search and filter active openings, view job details, upload a CV, and track application status.
+- **Employer / HR:** Create, edit, and close job postings, review applicants, download CVs, and update candidate statuses.
+- **Admin Dashboard:** Manage platform-wide listings and import jobs from external portals via CSV (imported listings redirect applicants to the original source URL).
+- **Database-Level Security:** Role-based access (`job_seeker`, `employer`, `admin`) is enforced directly in PostgreSQL using Row Level Security (RLS) policies rather than relying solely on frontend route guards.
 
-## Account types
-| Type | Can do |
-|---|---|
-| Job seeker | Browse jobs, apply with a CV, see own applications |
-| Employer / HR | Post, edit, deactivate, delete own jobs; see applicants and CVs of own jobs; change application status |
-| Admin | Everything, plus CSV import and the admin dashboard |
+## Tech Stack
 
-Security is enforced by Row Level Security in the database (see `database/phase5-migration.sql`), not only by the pages.
+- **Frontend:** Next.js (App Router), React, Tailwind CSS
+- **Backend & Auth:** Next.js API Routes, Supabase Auth
+- **Database & Storage:** Supabase PostgreSQL (with RLS) and Supabase Storage (for CVs)
+- **Deployment:** Vercel (including a daily `/api/keepalive` cron job configured in `vercel.json`)
 
-## Structure
-```
-app/
-  page.js                       homepage (search, filters, Load More)
-  login, signup                 accounts
-  jobs/[id]                     job details; jobs/[id]/apply = apply with CV
-  applications                  job seeker: my applications
-  employer/                     my jobs; jobs/new; jobs/[id]/edit; jobs/[id]/applicants
-  admin/                        dashboard; admin/import = CSV import
-  api/jobs                      public API: list/search, filters, single job
-components/                     AuthProvider, RequireRole, Navbar, JobForm, JobBoard, JobCard ...
-lib/                            supabase.js (server), supabaseBrowser.js, jobs.js, csv.js, jobFormat.js ...
-database/                       SQL files
-```
+## Project Structure
 
-Stellenportal is an independent college project and is not affiliated with LinkedIn, Indeed, Naukri or Internshala.
+```text
+├── app/
+│   ├── admin/          # Admin dashboard and CSV import tools
+│   ├── api/jobs/       # Public API endpoints for listing, searching, and filtering jobs
+│   ├── applications/   # Job seeker application tracking
+│   ├── employer/       # Job management and applicant review views
+│   ├── jobs/[id]/      # Job detail and CV application flow
+│   ├── login/          # Authentication pages
+│   └── page.js         # Main job board with search, filters, and Load More
+├── components/         # AuthProvider, RequireRole, Navbar, JobBoard, JobForm, JobCard
+├── database/           # SQL schema, RLS policies, seed data, and role migrations
+└── lib/                # Supabase clients, query helpers, CSV parser, and formatters
